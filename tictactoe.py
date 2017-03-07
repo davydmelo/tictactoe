@@ -94,7 +94,7 @@ def check_victory(xturn, board):
            check_victory_vertical_lines(symbol, board) or \
            check_victory_diagonal_lines(symbol, board)
 
-def check_all_filled(board):
+def check_tie(board):
     for line in board:
         if 0 in line:
             return False
@@ -138,7 +138,7 @@ if __name__ == "__main__":
                             victory = True
                             print("VICTORY!!!")
 
-                        if check_all_filled(board):
+                        if check_tie(board):
                             victory = True
                             print("VELHA!!!")
 
