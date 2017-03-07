@@ -27,7 +27,6 @@ def draw_x(surface, row, col):
     posy = int((height / 3) * row + height / 6)
 
     white = (255, 255, 255)
-    print(posx, posy)
     pygame.draw.line(surface, white, (posx - 5, posy - 5), (posx + 5, posy + 5))
     pygame.draw.line(surface, white, (posx + 5, posy - 5), (posx - 5, posy + 5))
 
@@ -64,6 +63,29 @@ def check_victory_vertical_lines(symbol, board):
                 break
 
 def check_victory_diagonal_lines(symbol, board):
+    index = 0
+    counter = 0
+
+    for line in board:
+        if line[index] == symbol:
+            counter += 1
+            index += 1
+            if counter == 3:
+                return True
+        else:
+            counter = 0
+            index = 2
+            break
+
+    for line in board:
+        if line[index] == symbol:
+            counter += 1
+            index -= 1
+            if counter == 3:
+                return True
+        else:
+            break
+
     return False
 
 def check_victory(xturn, board):
@@ -71,6 +93,12 @@ def check_victory(xturn, board):
     return check_victory_horizontal_lines(symbol, board) or \
            check_victory_vertical_lines(symbol, board) or \
            check_victory_diagonal_lines(symbol, board)
+
+def check_all_filled(board):
+    for line in board:
+        if 0 in line:
+            return False
+    return True
 
 if __name__ == "__main__":
     pygame.init()
@@ -81,6 +109,7 @@ if __name__ == "__main__":
 
     size = width, height = 300, 300
     screen = pygame.display.set_mode(size)
+    victory = False
 
     while True:
         draw_board(screen)
@@ -91,22 +120,26 @@ if __name__ == "__main__":
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONUP:
 
-                pos = pygame.mouse.get_pos()
-                col = int(pos[0] / (width / 3))
-                row = int(pos[1] / (height / 3))
+                if not victory:
 
-                if board[row][col] == 0:
-                    if xturn:
-                        draw_symbol(screen, 'x', row, col)
-                        board[row][col] = 'x'
-                    else:
-                        draw_symbol(screen, 'o', row, col)
-                        board[row][col] = 'o'
+                    pos = pygame.mouse.get_pos()
+                    col = int(pos[0] / (width / 3))
+                    row = int(pos[1] / (height / 3))
 
-                    if check_victory(xturn, board):
-                        print("VICTORY!!!")
-                    xturn = not xturn
+                    if board[row][col] == 0:
+                        if xturn:
+                            draw_symbol(screen, 'x', row, col)
+                            board[row][col] = 'x'
+                        else:
+                            draw_symbol(screen, 'o', row, col)
+                            board[row][col] = 'o'
 
+                        if check_victory(xturn, board):
+                            victory = True
+                            print("VICTORY!!!")
 
-                print(board)
+                        if check_all_filled(board):
+                            victory = True
+                            print("VELHA!!!")
 
+                        xturn = not xturn
